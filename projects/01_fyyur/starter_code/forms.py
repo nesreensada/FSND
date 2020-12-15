@@ -136,6 +136,9 @@ class ArtistForm(Form):
                 raise ValidationError("Invalid Genre")
     name = StringField('name', validators=[DataRequired()]
     )
+    address = StringField(
+        'address', validators=[DataRequired()]
+    )
     city = StringField('city', validators=[DataRequired()]
     )
     state = SelectField(
@@ -159,9 +162,9 @@ class ArtistForm(Form):
     website = StringField(
         'website', validators=[URL()]
     )
-    seeking_talent = BooleanField('seeking_talent')
-    seeking_talent_description = StringField(
-        'seeking_description'
+    seeking_venue = BooleanField('seeking_venue')
+    seeking_venue_description = StringField(
+        'seeking_venue_description'
     )
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM

@@ -46,7 +46,7 @@ class Venue(db.Model):
     shows = db.relationship('Show', backref='Venue', lazy='dynamic')
     # TODO: add functions needed as insert, update, delete, description
     def __repr__(self):
-      return f'<Artist {self.id} {self.name} >'
+      return f'<Venue {self.id} {self.name} >'
 
     def row2dict(row):
       return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
@@ -56,6 +56,7 @@ class Artist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    address = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
@@ -63,8 +64,8 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean, default=False)
-    seeking_talent_description = db.Column(db.String())
+    seeking_venue = db.Column(db.Boolean, default=False)
+    seeking_venue_description = db.Column(db.String())
     shows = db.relationship('Show', backref='Artist', lazy='dynamic')
     # TODO: add functions needed as insert, update, delete, description
     def __repr__(self):

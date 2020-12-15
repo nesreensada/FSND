@@ -12,6 +12,7 @@ from flask_wtf import Form
 from models import *
 from forms import *
 import sys
+from collections import defaultdict
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -44,7 +45,7 @@ def venues():
 
 	current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
 	venues = Venue.query.all()
-	data_dict = {}
+	data_dict = defaultdict(dict)
 	
 	for venue in venues:
 		# data_dict --> key city_state
@@ -68,9 +69,6 @@ def venues():
 			data_dict[data_dict_key]['venues'].append(venue_obj)
 
 	data = list(data_dict.values())
-	print(data, 'what we have here')
-
-
 	return render_template('pages/venues.html', areas=data);
 
 @app.route('/venues/search', methods=['GET', 'POST'])
@@ -125,11 +123,13 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-
+	seeking_talent = False
+	if seeking_talent in request.form:
+		seeking_talent = request.form['seeking_talent'] == 'y'
 	# TODO: insert form data as a new Venue record in the db, instead
 	# TODO: modify data to be the data object returned from db insertion
 	try:
-		# get the data from the form
+		# get the data from the form    
 		venue = Venue(name=request.form.get('name'),
 		city=request.form.get('city'),
 		state=request.form.get('state'),
@@ -138,9 +138,9 @@ def create_venue_submission():
 		image_link=request.form.get('image_link'),
 		genres=request.form.get('genres'),
 		facebook_link=request.form.get('facebook_link'),
-		seeking_talent_description=request.form.get('seeking_talent_description'),
+		seeking_talent_description=request.form.get('seeking_talent_description', ''),
 		website=request.form.get('website'),
-		seeking_talent=request.form.get('seeking_talent'))
+		seeking_talent=seeking_talent)
 
 		db.session.add(venue)
 		db.session.commit()
@@ -158,7 +158,6 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-		print('do we gt hree')
 		# TODO: Complete this endpoint for taking a venue_id, and using
 		# SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
 		try:
@@ -166,6 +165,7 @@ def delete_venue(venue_id):
 			db.session.delete(venue)
 			db.session.commit()
 			flash('Venue ' + venue_id + ' was successfully deleted!')
+			return render_template('pages/home.html')
 		except:
 			print(sys.exc_info())
 			flash('An error occurred. Venue ' + venue_id + ' could not be deleted.')
@@ -301,34 +301,39 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-		try:
-			artist = Artist(name=request.form.get('name'),
-				 city=request.form.get('city'),
-				 state=request.form.get('state'),
-				 address=request.form.get('address'),
-				 phone=request.form.get('phone'),
-				 image_link=request.form.get('image_link'),
-				 genres=request.form.get('genres'),
-				 facebook_link=request.form.get('facebook_link'),
-				 seeking_talent_description=request.form.get('seeking_talent_description'),
-				 website=request.form.get('website'),
-				 seeking_talent=request.form.get('seeking_talent')
-			)
-			# called upon submitting the new artist listing form
-			# TODO: insert form data as a new Venue record in the db, instead
-			# TODO: modify data to be the data object returned from db insertion
-			db.session.add(artist)
-			db.session.commit()
-			# on successful db insert, flash success
-			flash('Artist ' + request.form['name'] + ' was successfully listed!')
-		except:
-			print(sys.exc_info())
-			# TODO: on unsuccessful db insert, flash an error instead.
-			flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
-			db.session.rollback()
-		finally:
-			db.session.close()
-		return render_template('pages/home.html')
+	print('do we get here', request.form.to_dict())
+	seeking_venue = False
+	if seeking_venue in request.form:
+		seeking_venue = request.form['seeking_venue'] == 'y'
+	try:
+		artist = Artist(name=request.form.get('name'),
+			address=request.form.get('address'),
+			 city=request.form.get('city'),
+			 state=request.form.get('state'),
+			 phone=request.form.get('phone'),
+			 image_link=request.form.get('image_link'),
+			 genres=request.form.get('genres'),
+			 facebook_link=request.form.get('facebook_link'),
+			 seeking_venue_description=request.form.get('seeking_venue_description', ''),
+			 website=request.form.get('website', ''),
+			 seeking_venue=seeking_venue
+		)
+		# called upon submitting the new artist listing form
+		# TODO: insert form data as a new Venue record in the db, instead
+		# TODO: modify data to be the data object returned from db insertion
+		print(Artist.row2dict(artist), 'what is here')
+		db.session.add(artist)
+		db.session.commit()
+		# on successful db insert, flash success
+		flash('Artist ' + request.form['name'] + ' was successfully listed!')
+	except:
+		print(sys.exc_info())
+		# TODO: on unsuccessful db insert, flash an error instead.
+		flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
+		db.session.rollback()
+	finally:
+		db.session.close()
+	return render_template('pages/home.html')
 
 
 #  Shows

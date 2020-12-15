@@ -47,11 +47,11 @@
 
         <div class="form-group">
          <label for="seeking_talent_description">Seeking Talent Description</label>
-         {{ form.seeking_talent_description(class_ = 'form-control', placeholder='', id=form.seeking_talent_description, autofocus = true) }}
+         {{ form.seeking_talent_description(class_ = 'form-control', autofocus = true) }}
        </div>
        <div class="form-group">
          <label for="seeking_talent">Seeking Talent</label>
-         {{ form.seeking_talent(class_ = 'form-control ', id=form.seeking_talent, autofocus = true) }}
+         {{ form.seeking_talent(class_ = 'form-control', placeholder='Venue', autofocus = true) }}
        </div>
       <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
     </form>
