@@ -43,10 +43,13 @@ class Venue(db.Model):
     seeking_talent = db.Column(db.Boolean, default=False)
     seeking_talent_description = db.Column(db.String())
     website = db.Column(db.String(120))
-    shows = db.relationship('Show', backref='Venue', lazy=True)
+    shows = db.relationship('Show', backref='Venue', lazy='dynamic')
     # TODO: add functions needed as insert, update, delete, description
     def __repr__(self):
       return f'<Artist {self.id} {self.name} >'
+
+    def row2dict(row):
+      return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -62,10 +65,13 @@ class Artist(db.Model):
     website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=False)
     seeking_talent_description = db.Column(db.String())
-    shows = db.relationship('Show', backref='Artist', lazy=True)
+    shows = db.relationship('Show', backref='Artist', lazy='dynamic')
     # TODO: add functions needed as insert, update, delete, description
     def __repr__(self):
       return f'<Venue {self.id} {self.name} >'
+
+    def row2dict(row):
+      return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
 
 #TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
@@ -77,3 +83,5 @@ class Show(db.Model):
     # TODO: add functions needed as insert, update, delete, description
     def __repr__(self):
       return f'<Show {self.id}, Artist {self.artist_id}, Venue {self.venue_id} and Start Time {self.start_time}>'
+    def row2dict(row):
+      return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())

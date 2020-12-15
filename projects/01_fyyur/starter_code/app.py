@@ -148,6 +148,7 @@ def create_venue_submission():
 		flash('Venue ' + request.form['name'] + ' was successfully listed!')
 
 	except:
+			print(sys.exc_info())
 			# TODO: on unsuccessful db insert, flash an error instead.
 			flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
 			db.session.rollback()
@@ -157,20 +158,21 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
+		print('do we gt hree')
 		# TODO: Complete this endpoint for taking a venue_id, and using
 		# SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
 		try:
-			venue = Venue.query.filter_by(id=venue_id)
-			venue_name = venue.name
+			venue = Venue.query.get(venue_id)
 			db.session.delete(venue)
 			db.session.commit()
-			flash('Venue ' + venue_name + ' was successfully deleted!')
+			flash('Venue ' + venue_id + ' was successfully deleted!')
 		except:
-			flash('An error occurred. Venue ' + venue_name + ' could not be deleted.')
+			print(sys.exc_info())
+			flash('An error occurred. Venue ' + venue_id + ' could not be deleted.')
 			db.session.rollback()
 		finally:
 			db.session.close()
-		return redirect(url_for('index'))
+		return render_template('pages/home.html')
 
 
 	# BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
@@ -265,26 +267,26 @@ def edit_artist_submission(artist_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
+	
+	venue = Venue.row2dict(Venue.query.get(venue_id))
 	form = VenueForm()
-	venue={
-		"id": 1,
-		"name": "The Musical Hop",
-		"genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-		"address": "1015 Folsom Street",
-		"city": "San Francisco",
-		"state": "CA",
-		"phone": "123-123-1234",
-		"website": "https://www.themusicalhop.com",
-		"facebook_link": "https://www.facebook.com/TheMusicalHop",
-		"seeking_talent": True,
-		"seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-		"image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
-	}
 	# TODO: populate form with values from venue with ID <venue_id>
 	return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
+	venue_dict = Venue.row2dict(Venue.query.get(venue_id))
+	try:
+		venue_dict.update(request.form.to_dict())
+		venue = Venue(**venue_dict)
+		flash('Venue ' + request.form['name'] + ' was successfully updated!')
+	except:
+		print(sys.exc_info())
+		# TODO: on unsuccessful db insert, flash an error instead.
+		flash('An error occurred. Venue ' + request.form['name'] + ' could not be updated.')
+		db.session.rollback()
+	finally:
+		db.session.close()
 	# TODO: take values from the form submitted, and update existing
 	# venue record with ID <venue_id> using the new attributes
 	return redirect(url_for('show_venue', venue_id=venue_id))
@@ -320,6 +322,7 @@ def create_artist_submission():
 			# on successful db insert, flash success
 			flash('Artist ' + request.form['name'] + ' was successfully listed!')
 		except:
+			print(sys.exc_info())
 			# TODO: on unsuccessful db insert, flash an error instead.
 			flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
 			db.session.rollback()
