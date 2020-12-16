@@ -35,7 +35,7 @@
 		<div class="seeking">
 			<p class="lead">Currently seeking talent</p>
 			<div class="description">
-				<i class="fas fa-quote-left"></i> {{ venue.seeking_description }} <i class="fas fa-quote-right"></i>
+				<i class="fas fa-quote-left"></i> {{ venue.seeking_talent_description }} <i class="fas fa-quote-right"></i>
 			</div>
 		</div>
 		{% else %}
@@ -61,7 +61,6 @@ class="btn btn-primary btn-lg btn-block">Edit Venue</a>
     <button id="delete_venue" onclick="deleteVenue(event)" class="btn btn-primary btn-lg btn-block"   data-id="{{ venue.id }}">Delete</button>
 
 {% endif %}
-
 </div>
 </div>
 
