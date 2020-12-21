@@ -227,9 +227,7 @@ def create_app(test_config=None):
     def get_question_for_quiz():
         """ Get a question for a quiz return 400 if fails
         """
-        print('are we here')
         body = request.get_json()
-        print(body)
         previous_questions = body.get('previous_questions', None)
         quiz_category = body.get('quiz_category', None)
         if previous_questions is None or quiz_category is None:
@@ -241,11 +239,9 @@ def create_app(test_config=None):
         else:
             query = query.filter(~Question.id.in_(previous_questions))
         questions = query.all()
-        print(questions)
 
         if questions:
             next_question = random.choice(questions)
-            print(next_question, 'why we fail')
             return jsonify({
                 'success': True,
                 'question': Question.format(next_question)
