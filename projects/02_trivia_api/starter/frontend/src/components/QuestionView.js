@@ -67,11 +67,10 @@ class QuestionView extends Component {
 
   getByCategory= (id, page = 1) => {
     $.ajax({
-      url: `/categories/${id}/questions?page=${page}`, //TODO: update request URL
+      url: `/categories/${id}/questions`, //TODO: update request URL
       type: "GET",
       success: (result) => {
         this.setState({
-          page: page,
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category })
@@ -84,9 +83,9 @@ class QuestionView extends Component {
     })
   }
 
-  submitSearch = (searchTerm, page = 1) => {
+  submitSearch = (searchTerm) => {
     $.ajax({
-      url: `/searchQuestions?page=${page}`, //TODO: update request URL
+      url: `/questions/search`, //TODO: update request URL
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
@@ -97,12 +96,10 @@ class QuestionView extends Component {
       crossDomain: true,
       success: (result) => {
         this.setState({
-          searchQuery: searchTerm,
-          page: page,
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category
-        });
+        })
         return;
       },
       error: (error) => {

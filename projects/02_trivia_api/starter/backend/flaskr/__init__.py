@@ -125,7 +125,30 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
-
+    @app.route('/questions', methods=['POST'])
+    def create_question():
+        """ Create a question given id
+        returns 422 if the operation fails
+        """
+        body = request.get_json()
+        try:
+            question = Question(
+                question=body.get('question', None),
+                answer=body.get('answer', None),
+                category=body.get('category', None),
+                difficulty=body.get('difficulty', None)
+            )
+            question.insert()
+            selection = Question.query.order_by(Question.id).all()
+            current_questions = paginate_questions(request, selection)
+            return jsonify({
+                'success': True,
+                'created': question.id,
+                'questions': current_questions,
+                'total_questions': len(selection)
+            })
+        except:
+            abort(422)
     '''
   @TODO:
   Create a POST endpoint to get questions based on a search term.
@@ -136,7 +159,30 @@ def create_app(test_config=None):
   only question that include that string within their question.
   Try using the word "title" to start.
   '''
-
+    @app.route('/questions/search', methods=['POST'])
+    def search_question():
+        """ Search a question by
+        returns 404 if the operation fails to signify missing resource
+        """
+        body = request.get_json()
+        search_term = body.get('searchTerm', '')
+        if not search_term:
+            abort(422)
+        try:
+            selection = Question.query.order_by(Question.id).filter(
+                Question.question.ilike(f'%{search_term}%')
+            ).all()
+            if not selection:
+                abort(404)
+            current_questions = paginate_questions(request, selection)
+            return jsonify({
+                'success': True,
+                'questions': current_questions,
+                'total_questions': len(selection),
+                'current_category': None
+            })
+        except:
+            abort(404)
     '''
   @TODO:
   Create a GET endpoint to get questions based on category.
@@ -145,7 +191,27 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that
   category to be shown.
   '''
-
+    @app.route('/categories/<int:category_id>/questions')
+    def get_questions_by_category(category_id):
+        """ Search a question given category_id
+        returns 422 if the operation fails
+        """
+        category = Category.query.filter_by(id=category_id).one_or_none()
+        if not category:
+            abort(422)
+        try:
+            selection = Question.query.filter_by(category=category_id).all()
+            if not selection:
+                abort(422)
+            current_questions = paginate_questions(request, selection)
+            return jsonify({
+                'success': True,
+                'questions': current_questions,
+                'total_questions': len(selection),
+                'current_category': category.type
+            })
+        except:
+            abort(422)
     '''
   @TODO:
   Create a POST endpoint to get questions to play the quiz.
@@ -163,13 +229,29 @@ def create_app(test_config=None):
   Create error handlers for all expected errors
   including 404 and 422.
   '''
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "bad request"
+        }), 400
+
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
             "success": False,
             "error": 404,
-            "message": " resource not found"
+            "message": "resource not found"
         }), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({
+            "success": False,
+            "error": 405,
+            "message": "method not allowed"
+        }), 405
 
     @app.errorhandler(422)
     def unprocessable(error):
@@ -178,5 +260,13 @@ def create_app(test_config=None):
             "error": 422,
             "message": "unprocessable"
         }), 422
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+            "success": False,
+            "error": 500,
+            "message": "Internal server error"
+        }), 500
 
     return app
