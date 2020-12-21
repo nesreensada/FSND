@@ -44,7 +44,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['total_questions'])
-        self.assertTrue(len(data['books']))
+        self.assertTrue(len(data['questions']))
         self.assertTrue(len(data["categories"]))
 
     def test_404_sent_requesting_beyond_valid_page(self):
@@ -58,12 +58,12 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_delete_questions(self):
         """Test deletion of questions based on given id"""
-        res = self.client().delete('/questions/1')
+        res = self.client().delete('/questions/5')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'], 1)
+        self.assertEqual(data['deleted'], 5)
         self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['questions']))
 
@@ -90,23 +90,18 @@ class TriviaTestCase(unittest.TestCase):
             'question': 'longest river in the world mock question ',
             'answer': 'Nile - this is a mock answer',
             'difficulty': 2,
-            'category': 1,
+            'category': 1
         }
-        res = self.client().post('/questions/', json=mock_question)
+        res = self.client().post('/questions', json=mock_question)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['created'])
-        self.assertTrue(len(data['questions']))
 
     def test_422_valid_new_question(self):
         """Test creating questions"""
-        mock_question = {
-            'question': 'longest river in the world mock question ',
-            'answer': 'Nile - this is a mock answer'
-        }
-        res = self.client().post('/questions/', json=mock_question)
+
+        res = self.client().post('/questions')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 422)
@@ -116,7 +111,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_questions_search_with_results(self):
         """Test Search questions"""
 
-        res = self.client().post('/questions', json={'searchTerm': 'earned'})
+        res = self.client().post('/questions/search', json={'searchTerm': 'earned'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -128,12 +123,20 @@ class TriviaTestCase(unittest.TestCase):
         """Test empty Search questions"""
 
         res = self.client().post('/questions/search',
-                                 json={'search': 'applejacks'})
+                                 json={'searchTerm': 'applejacks'})
         data = json.loads(res.data)
-
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'resource not found')
+
+    def test_get_questions_search_term(self):
+        """Test empty Search questions"""
+
+        res = self.client().post('/questions/search', json={})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
 
     def test_get_questions_by_category(self):
         """Test get questions by category"""
@@ -145,7 +148,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['questions']))
-        self.assertTrue(data['categories'])
 
     def test_422_get_questions_by_category(self):
         """Test get questions by category"""
@@ -153,7 +155,7 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data['message'], 'unprocessable')
+
 
     def test_get_question_for_quiz(self):
         """Test get question by quiz"""
