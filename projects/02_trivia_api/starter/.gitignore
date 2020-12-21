@@ -11,3 +11,7 @@ venv
 .Trashes
 ehthumbs.db
 Thumbs.db
+frontend/node_modules
+backend/MyEnv
+backend/__pycache__
+frontend/__pycache__

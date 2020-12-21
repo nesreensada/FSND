@@ -481,7 +481,6 @@ GET '/categories'
 - Request Arguments: previous_questions, quiz_category
 - Returns: an object containing the question.
 - sample: `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [15, 19], "quiz_category": {"type": "Art", "id": "2"}}'`
-
 ```
 {
   "question": {
@@ -494,6 +493,7 @@ GET '/categories'
   "success": true
 }
 ```
+
 ## Testing
 To run the tests, run
 ```
