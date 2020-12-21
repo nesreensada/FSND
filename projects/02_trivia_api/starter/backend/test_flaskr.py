@@ -197,9 +197,8 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().post('/quizzes', json=mock_data)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 422)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data['message'], 'unprocessable')
 
 
 # Make the tests conveniently executable

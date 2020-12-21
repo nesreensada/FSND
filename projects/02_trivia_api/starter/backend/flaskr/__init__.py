@@ -235,7 +235,7 @@ def create_app(test_config=None):
         query = Question.query
         if quiz_category['id'] != 0:
             query = query.filter(~Question.id.in_(previous_questions)) \
-                .filter_by(category=quiz_category)
+                .filter_by(category=quiz_category['id'])
         else:
             query = query.filter(~Question.id.in_(previous_questions))
         questions = query.all()
