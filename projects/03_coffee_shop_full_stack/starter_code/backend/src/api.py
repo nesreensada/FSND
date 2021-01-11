@@ -180,5 +180,9 @@ def server_error(error):
 
 
 @app.errorhandler(AuthError)
-def handle_auth_error(e):
-    return jsonify(e.error), e.status_code
+def handle_auth_error(error):
+    return jsonify({
+        "success": False,
+        "error": error.status_code,
+        "message": error.error['code']
+    }), error.status_code
