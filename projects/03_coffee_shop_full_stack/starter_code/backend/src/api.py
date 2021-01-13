@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
+import sys
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
@@ -146,19 +147,19 @@ def delete_drink(jwt, drink_id):
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-                    "success": False,
-                    "error": 422,
-                    "message": "unprocessable"
-                    }), 422
+        "success": False,
+        "error": 422,
+        "message": "unprocessable"
+    }), 422
 
 
 @app.errorhandler(404)
 def resource_not_found(error):
     return jsonify({
-           "success": False,
-           "error": 404,
-           "message": "resource not found"
-           }), 404
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
 
 @app.errorhandler(400)
