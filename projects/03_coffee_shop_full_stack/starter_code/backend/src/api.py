@@ -80,8 +80,11 @@ def create_drink(jwt):
     try:
         data = request.get_json()
 
+        recipe = data.get('recipe') if type(data.get('recipe')) == str \
+            else json.dumps(data.get('recipe'))
+
         drink = Drink(title=data.get('title', None),
-                      recipe=json.dumps(data.get('recipe', None)))
+                      recipe=recipe)
         drink.insert()
         drinks = list(map(Drink.long, Drink.query.all()))
         return jsonify({
