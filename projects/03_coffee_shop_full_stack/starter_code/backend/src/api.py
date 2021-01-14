@@ -39,6 +39,7 @@ def get_drinks():
         }), 200
 
     except Exception:
+        print(sys.exc_info())
         abort(500)
 
 
@@ -147,19 +148,19 @@ def delete_drink(jwt, drink_id):
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-        "success": False,
-        "error": 422,
-        "message": "unprocessable"
-    }), 422
+                    "success": False,
+                    "error": 422,
+                    "message": "unprocessable"
+                    }), 422
 
 
 @app.errorhandler(404)
 def resource_not_found(error):
     return jsonify({
-        "success": False,
-        "error": 404,
-        "message": "resource not found"
-    }), 404
+           "success": False,
+           "error": 404,
+           "message": "resource not found"
+           }), 404
 
 
 @app.errorhandler(400)
